@@ -1,0 +1,1 @@
+# Core Information Retrieval Project group - AppliedNLP22
