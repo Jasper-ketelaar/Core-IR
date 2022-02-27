@@ -14,10 +14,12 @@
     </properties>
 
     <dependencies>
+
         <dependency>
             <groupId>io.anserini</groupId>
             <artifactId>anserini</artifactId>
-            <version>0.14.0</version>
+            <version>0.13.5</version>
         </dependency>
+
     </dependencies>
 </project>
