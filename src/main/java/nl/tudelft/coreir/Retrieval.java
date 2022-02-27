@@ -27,7 +27,7 @@ public class Retrieval {
         Retrieval retrieval = new Retrieval();
         try {
             retrieval.prepareData();
-            retrieval.index(true);
+            retrieval.index(false);
             retrieval.retrieveBM25Marco(4.46f, 0.82f);
             retrieval.evaluate();
         } catch (Exception e) {
@@ -85,15 +85,15 @@ public class Retrieval {
         SearchArgs args = new SearchArgs();
         args.hits = 100;
         args.index = INDEX_PATH;
-        args.threads = Runtime.getRuntime().availableProcessors() - 1;
-        args.format = "msmarco";
+        args.threads = 4;
         //args.parallelism = Runtime.getRuntime().availableProcessors() - 1;
         args.topicReader = "TsvInt";
         args.bm25 = true;
         args.bm25_k1 = new String[]{String.valueOf(k1)};
         args.bm25_b = new String[]{String.valueOf(b)};
         args.topics = new String[]{"./data/topics-and-qrels/topics.msmarco-doc.dev.txt"};
-        args.output = "./data/runs/run.msmarco-doc.leaderboard-dev.bm25.txt";
+        args.output = "./data/runs/run.msmarco-doc.leaderboard-dev.bm25base.txt";
+        args.format = "msmarco";
 
         final File file = new File("./data/runs/run.msmarco-doc.dev.bm25.txt");
         if (!file.exists() && !file.createNewFile()) {
