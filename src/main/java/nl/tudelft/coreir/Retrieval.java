@@ -27,7 +27,7 @@ public class Retrieval {
         Retrieval retrieval = new Retrieval();
         try {
             retrieval.prepareData();
-            retrieval.index(false);
+            retrieval.index(true);
             retrieval.retrieveBM25Marco(4.46f, 0.82f);
             retrieval.evaluate();
         } catch (Exception e) {
@@ -66,7 +66,23 @@ public class Retrieval {
         if (!index.exists() && !index.mkdirs()) {
             throw new RuntimeException("Could not create directory/directories");
         }
+        Process process = Runtime.getRuntime().exec(new String[]{
+                "./bin/IndexCollection.bat",
+                "-threads 1",
+                "-collection CleanTrecCollection",
+                "-generator DefaultLuceneDocumentGenerator",
+                "-input " + gzippedMarco.getParent(),
+                "-index " + INDEX_PATH,
+                "-storePositions -storeDocvectors -storeRaw"
+        });
+        process.waitFor();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        System.out.println(IOUtils.readLines(reader));
 
+
+        reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+        System.out.println(IOUtils.readLines(reader));
+        /*
         IndexArgs indexArgs = new IndexArgs();
         indexArgs.collectionClass = "CleanTrecCollection";
         indexArgs.generatorClass = "DefaultLuceneDocumentGenerator";
@@ -78,11 +94,28 @@ public class Retrieval {
         indexArgs.threads = 1;
 
         IndexCollection indexCollection = new IndexCollection(indexArgs);
-        indexCollection.run();
+        indexCollection.run();*/
     }
 
-    private void retrieveBM25Marco(float k1, float b) throws IOException {
-        SearchArgs args = new SearchArgs();
+    private void retrieveBM25Marco(float k1, float b) throws IOException, InterruptedException {
+        Process process = Runtime.getRuntime().exec(new String[]{
+                "./bin/SearchCollection.bat",
+                "-hits 100",
+                "-parallelism 4",
+                "-index " + INDEX_PATH,
+                "-topicreader TsvInt",
+                "-output runs/run.msmarco-doc.leaderboard-dev.bm25tuned.txt",
+                "-format msmarco",
+                " -bm25 -bm25.k1 4.46 -bm25.b 0.82"
+        });
+        process.waitFor();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        System.out.println(IOUtils.readLines(reader));
+
+
+        reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+        System.out.println(IOUtils.readLines(reader));
+        /*SearchArgs args = new SearchArgs();
         args.hits = 100;
         args.index = INDEX_PATH;
         args.threads = 4;
@@ -101,7 +134,7 @@ public class Retrieval {
         }
 
         SearchCollection searchCollection = new SearchCollection(args);
-        searchCollection.runTopics();
+        searchCollection.runTopics();*/
     }
 
     private void retrieveBM25Default() throws IOException {
