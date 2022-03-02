@@ -28,7 +28,7 @@ public class Retrieval {
         Retrieval retrieval = new Retrieval();
         try {
             retrieval.prepareData();
-            retrieval.index(false);
+            retrieval.index(true);
             retrieval.retrieveBM25Marco(4.46f, 0.82f);
             retrieval.evaluate();
         } catch (Exception e) {
@@ -76,7 +76,8 @@ public class Retrieval {
         indexArgs.storePositions = true;
         indexArgs.storeDocvectors = true;
         indexArgs.storeRaw = true;
-        indexArgs.threads = 1;
+        indexArgs.threads = Runtime.getRuntime().availableProcessors() - 1;
+
 
         IndexCollection indexCollection = new IndexCollection(indexArgs);
         indexCollection.run();
@@ -125,6 +126,7 @@ public class Retrieval {
     }
 
     private void evaluate() throws IOException {
+
         Process process = Runtime.getRuntime().exec(new String[]{
                 "python",
                 "./tools/scripts/msmarco/msmarco_doc_eval.py",
@@ -134,16 +136,24 @@ public class Retrieval {
                 RANKING_RESULTS,
         });
 
+        new Thread(() -> {
+            while (process.isAlive()) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                try {
+                    System.out.println(IOUtils.readLines(reader));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
         try {
             process.waitFor();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        System.out.println(IOUtils.readLines(reader));
 
-
-        reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
         System.out.println(IOUtils.readLines(reader));
 
     }
