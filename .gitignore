@@ -1,0 +1,6 @@
+var/
+index/
+.pyterrier/
+.idea/
+.DS_Store
+*.gz
