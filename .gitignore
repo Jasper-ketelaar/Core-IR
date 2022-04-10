@@ -3,3 +3,8 @@ persist/
 corpus/
 clickbait17-test-170720/
 **wordlists/
+
+.idea/
+.vscode/
+.DS_Store
+.git/
