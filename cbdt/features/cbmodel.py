@@ -31,7 +31,8 @@ class ClickbaitModel(object):
     __classification_measures = {'Accuracy': skm.accuracy_score,
                                  'Precision': skm.precision_score,
                                  'Recall': skm.recall_score,
-                                 'F1 score': skm.f1_score}
+                                 'F1 score': skm.f1_score
+                                 }
 
     def __init__(self):
         self.models = {"LogisticRegression": LogisticRegression(),
@@ -70,11 +71,6 @@ class ClickbaitModel(object):
     def eval_classify(self, y_test, y_predicted):
         for cm in self.__classification_measures:
             print("{} & {} \\\\".format(cm, round(self.__classification_measures[cm](y_test, y_predicted), 3)))
-        print("ROC-AUC & {} \\\\".format(round(skm.roc_auc_score(y_test, y_predicted), 3)))
-
-    def eval_regress(self, y_test, y_predicted):
-        for rm in self.__regression_measures:
-            print("{}: {}".format(rm, self.__regression_measures[rm](y_test, y_predicted)))
 
     def save(self, filename):
         joblib.dump(self.model_trained, filename)
