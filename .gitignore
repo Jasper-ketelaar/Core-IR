@@ -8,3 +8,4 @@ clickbait17-test-170720/
 .vscode/
 .DS_Store
 .git/
+**__pycache__/
