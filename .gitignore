@@ -1,0 +1,5 @@
+*.zip
+persist/
+corpus/
+clickbait17-test-170720/
+**wordlists/
